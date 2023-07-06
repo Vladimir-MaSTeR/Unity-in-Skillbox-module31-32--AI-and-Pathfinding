@@ -12,19 +12,19 @@ public class PersonController : MonoBehaviour {
     private Transform _targetPointDance;
 
     [SerializeField]
-    private float _targetRadiusDance;
+    private float _targetRadiusDance = 8.85f;
 
     [SerializeField]
     private Transform _targetPointBar;
 
     [SerializeField]
-    private float _targetRadiusBar;
+    private float _targetRadiusBar = 6.35f;
 
-    // [SerializeField]
-    // private Transform _targetPointRelaxRum;
-    //
-    // [SerializeField]
-    // private float _targetRadiusRelaxRum;
+    [SerializeField]
+    private Transform _targetPointRelaxRum;
+
+    [SerializeField]
+    private float _targetRadiusRelaxRum = 11.5f;
 
     #endregion
 
@@ -83,10 +83,18 @@ public class PersonController : MonoBehaviour {
 
                     _currentTimer = _idleTime;
                 }
+
+                if(_currenTagVolume.Equals("relax")) {
+                    _animator.SetBool("relax", true);
+                    _animator.SetBool("walk", false);
+                    _animator.SetInteger("dance", 0);
+
+                    _currentTimer = _relaxTime;
+                }
             }
         } else {
             if(_currentTimer <= 0) {
-                _zoneNumber = Random.Range(1, 3);
+                _zoneNumber = Random.Range(1, 4);
 
                 _animator.SetBool("walk", true);
                 _animator.SetBool("relax", false);
@@ -96,7 +104,6 @@ public class PersonController : MonoBehaviour {
                     // зона бара
                     _currentTargetPoint = _targetPointBar.position + Random.insideUnitSphere * _targetRadiusBar;
                     _agent.destination = _currentTargetPoint;
-                    // _currentTimer = 50f;
                     _walk = true;
                 }
 
@@ -104,31 +111,19 @@ public class PersonController : MonoBehaviour {
                     // зона танцпола
                     _currentTargetPoint = _targetPointDance.position + Random.insideUnitSphere * _targetRadiusDance;
                     _agent.destination = _currentTargetPoint;
-                    // _currentTimer = 50f;
                     _walk = true;
                 }
 
-                //пересчитать точку цели и двигаться к ней
+                if(_zoneNumber == 3) {
+                    // зона танцпола
+                    _currentTargetPoint = _targetPointRelaxRum.position + Random.insideUnitSphere * _targetRadiusRelaxRum;
+                    _agent.destination = _currentTargetPoint;
+                    _walk = true;
+                }
             } else {
                 _currentTimer -= Time.deltaTime;
             }
         }
-
-        // if(_agent.pathEndPosition.Equals(_targetPointBar.position * _targetRadiusBar)) {
-        //     _animator.SetBool("relax", false);
-        //     _animator.SetBool("walk", false);
-        //     //запускать таймер 
-        // }
-        //
-        // if(_agent.pathEndPosition.Equals(_targetPointRelaxRum.position * _targetRadiusRelaxRum)) {
-        //     _animator.SetBool("walk", false);
-        //     _animator.SetBool("relax", true);
-        //     //запускать таймер 
-        // }
-        // } else {
-        //     _animator.SetBool("walk", true);
-        //     // следить куда идем
-        // }
     }
 
     private void OnTriggerEnter(Collider other) {
@@ -151,5 +146,8 @@ public class PersonController : MonoBehaviour {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(_startTarget.transform.position, _targetRadiusDance);
         Gizmos.DrawWireSphere(_targetPointBar.position, _targetRadiusBar);
+        Gizmos.DrawWireSphere(_targetPointRelaxRum.position, _targetRadiusRelaxRum);
+
+        // Gizmos.DrawCube(_targetPointRelaxRum.position, _targetRadiusRelaxRum);
     }
 }

@@ -14,7 +14,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c2c3be3bfe9a01a4a8606e2ffc1c25ed, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 10.038913
+      value: 8.98
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c2c3be3bfe9a01a4a8606e2ffc1c25ed, type: 3}
       propertyPath: m_LocalPosition.y
@@ -22,7 +22,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c2c3be3bfe9a01a4a8606e2ffc1c25ed, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -1.4266453
+      value: -28.51
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c2c3be3bfe9a01a4a8606e2ffc1c25ed, type: 3}
       propertyPath: m_LocalRotation.w
@@ -689,6 +689,15 @@ PrefabInstance:
       addedObject: {fileID: 3437871797060305100}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c2c3be3bfe9a01a4a8606e2ffc1c25ed, type: 3}
       insertIndex: -1
+      addedObject: {fileID: 8528744021796585108}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c2c3be3bfe9a01a4a8606e2ffc1c25ed, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5507829061703209268}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c2c3be3bfe9a01a4a8606e2ffc1c25ed, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4343825671024760436}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c2c3be3bfe9a01a4a8606e2ffc1c25ed, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 6841408317369911729}
   m_SourcePrefab: {fileID: 100100000, guid: c2c3be3bfe9a01a4a8606e2ffc1c25ed, type: 3}
 --- !u!1 &5740479376441772918 stripped
@@ -717,6 +726,78 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!54 &8528744021796585108
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5740479376441772918}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!136 &5507829061703209268
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5740479376441772918}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 3.513554
+  m_Direction: 1
+  m_Center: {x: 0, y: 1.7789357, z: 0}
+--- !u!195 &4343825671024760436
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5740479376441772918}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!114 &6841408317369911729
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -729,3 +810,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a24eaa9b63c37e54fa1d9b7ce63129b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _startTarget: {fileID: 0}
+  _targetPointDance: {fileID: 0}
+  _targetRadiusDance: 8.85
+  _targetPointBar: {fileID: 0}
+  _targetRadiusBar: 6.35
+  _targetPointRelaxRum: {fileID: 0}
+  _targetRadiusRelaxRum: 11.5
+  _danceTime: 10
+  _idleTime: 5
+  _relaxTime: 6
