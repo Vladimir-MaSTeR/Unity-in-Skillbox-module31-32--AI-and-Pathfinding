@@ -3,43 +3,53 @@ using UnityEngine;
 using UnityEngine.AI;
 using Random = UnityEngine.Random;
 public class PersonController : MonoBehaviour {
+    
     #region Target Points fields and Radius
 
     [SerializeField]
-    private GameObject _startTarget;
+    private Transform _startTarget;
 
+    [SerializeField]
+    private Vector3 _startTargetRadiusV3 = new Vector3(0f, 0f, 0f);
+
+    [Space(10)]
     [SerializeField]
     private Transform _targetPointDance;
 
     [SerializeField]
-    private float _targetRadiusDance = 8.85f;
+    private Vector3 _targetRadiusDanceV3 = new Vector3(13f, 0.1f, 17f);
 
+    [Space(10)]
     [SerializeField]
     private Transform _targetPointBar;
 
     [SerializeField]
-    private float _targetRadiusBar = 6.35f;
+    private Vector3 _targetRadiusBarV3 = new Vector3(8f, 0.1f, 13f);
 
+    [Space(10)]
     [SerializeField]
     private Transform _targetPointRelaxRum;
 
     [SerializeField]
-    private float _targetRadiusRelaxRum = 11.5f;
+    private Vector3 _targetRadiusRelaxRumV3 = new Vector3(20f, 0.1f, 33f);
 
     #endregion
 
     #region Timers fields
 
+    [Space(10)]
     [SerializeField]
-    private float _danceTime = 10f;
+    private float _danceTime = 20f;
 
     [SerializeField]
-    private float _idleTime = 5f;
+    private float _idleTime = 10f;
 
     [SerializeField]
-    private float _relaxTime = 7;
+    private float _relaxTime = 10;
 
     #endregion
+
+    private int _id;
 
     private NavMeshAgent _agent;
     private Animator _animator;
@@ -52,74 +62,37 @@ public class PersonController : MonoBehaviour {
     private String _currenTagVolume;
     private int _zoneNumber;
 
+    private void Awake() {
+        _id = GetInstanceID();
+        // Debug.Log($"Присвоен идентификатор = {_id}");
+    }
+
     private void Start() {
         _agent = GetComponent<NavMeshAgent>();
         _animator = GetComponent<Animator>();
 
-        _currentTargetPoint = _startTarget.transform.position + Random.insideUnitSphere * _targetRadiusDance;
+        _currentTargetPoint = GetRandomPointInVector3(_startTarget.transform, _startTargetRadiusV3);
+        ;
         _agent.destination = _currentTargetPoint;
-        _animator.SetBool("walk", true);
+        UseAnimations(true, false, false, AnimationConstants.NO_DANCE_FOR_ANIM_PERSON);
         _walk = true;
     }
 
     private void Update() {
         if(_walk) {
-            Debug.Log($"ИДУ ДО ТОЧКИ {_agent.pathEndPosition}");
-            if(_agent.remainingDistance <= 0) {
-                Debug.Log($"ПУТЬ ЗАВЕРШЕН  В ПОЗИЦИЕ {_agent.pathEndPosition}");
+            if(_agent.remainingDistance <= _agent.stoppingDistance) {
                 _walk = false;
-
-                if(_currenTagVolume.Equals("dance")) {
-                    _animator.SetBool("walk", false);
-                    _animator.SetInteger("dance", Random.Range(1, 4));
-
-                    _currentTimer = _danceTime;
-                }
-
-                if(_currenTagVolume.Equals("bar")) {
-                    _animator.SetBool("walk", false);
-                    _animator.SetBool("relax", false);
-                    _animator.SetInteger("dance", 0);
-
-                    _currentTimer = _idleTime;
-                }
-
-                if(_currenTagVolume.Equals("relax")) {
-                    _animator.SetBool("relax", true);
-                    _animator.SetBool("walk", false);
-                    _animator.SetInteger("dance", 0);
-
-                    _currentTimer = _relaxTime;
-                }
+                DefinitionTagVolumeAndAssignTime();
             }
         } else {
+            if(_bodySearchTime) {
+                UseAnimations(false, false, true, AnimationConstants.NO_DANCE_FOR_ANIM_PERSON);
+            }
+
             if(_currentTimer <= 0) {
                 _zoneNumber = Random.Range(1, 4);
-
-                _animator.SetBool("walk", true);
-                _animator.SetBool("relax", false);
-                _animator.SetInteger("dance", 0);
-
-                if(_zoneNumber == 1) {
-                    // зона бара
-                    _currentTargetPoint = _targetPointBar.position + Random.insideUnitSphere * _targetRadiusBar;
-                    _agent.destination = _currentTargetPoint;
-                    _walk = true;
-                }
-
-                if(_zoneNumber == 2) {
-                    // зона танцпола
-                    _currentTargetPoint = _targetPointDance.position + Random.insideUnitSphere * _targetRadiusDance;
-                    _agent.destination = _currentTargetPoint;
-                    _walk = true;
-                }
-
-                if(_zoneNumber == 3) {
-                    // зона танцпола
-                    _currentTargetPoint = _targetPointRelaxRum.position + Random.insideUnitSphere * _targetRadiusRelaxRum;
-                    _agent.destination = _currentTargetPoint;
-                    _walk = true;
-                }
+                UseAnimations(true, false, false, AnimationConstants.NO_DANCE_FOR_ANIM_PERSON);
+                ActionsWithZoneNumber(_zoneNumber);
             } else {
                 _currentTimer -= Time.deltaTime;
             }
@@ -127,27 +100,89 @@ public class PersonController : MonoBehaviour {
     }
 
     private void OnTriggerEnter(Collider other) {
-        Debug.Log("ЗАДЕЛ ТРИГЕР");
-
-        if(other.CompareTag("dance")) {
-            _currenTagVolume = "dance";
+        if(other.CompareTag(AnimationConstants.TAG_DANCE_FOR_VOLUME)) {
+            _currenTagVolume = AnimationConstants.TAG_DANCE_FOR_VOLUME;
         }
 
-        if(other.CompareTag("bar")) {
-            _currenTagVolume = "bar";
+        if(other.CompareTag(AnimationConstants.TAG_BAR_FOR_VOLUME)) {
+            _currenTagVolume = AnimationConstants.TAG_BAR_FOR_VOLUME;
         }
 
-        if(other.CompareTag("relax")) {
-            _currenTagVolume = "relax";
+        if(other.CompareTag(AnimationConstants.TAG_RELAX_FOR_VOLUME)) {
+            _currenTagVolume = AnimationConstants.TAG_RELAX_FOR_VOLUME;
         }
     }
 
     private void OnDrawGizmos() {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(_startTarget.transform.position, _targetRadiusDance);
-        Gizmos.DrawWireSphere(_targetPointBar.position, _targetRadiusBar);
-        Gizmos.DrawWireSphere(_targetPointRelaxRum.position, _targetRadiusRelaxRum);
+        Gizmos.color = Color.yellow;
 
-        // Gizmos.DrawCube(_targetPointRelaxRum.position, _targetRadiusRelaxRum);
+        Gizmos.DrawWireCube(_targetPointDance.position, _targetRadiusDanceV3);
+        Gizmos.DrawWireCube(_targetPointBar.position, _targetRadiusBarV3);
+        Gizmos.DrawWireCube(_targetPointRelaxRum.position, _targetRadiusRelaxRumV3);
     }
+
+    private void ActionsWithZoneNumber(int zoneNumber) {
+        if(AnimationConstants.BAR_ZONE_NUMBER_VALUE == zoneNumber) {
+            _currentTargetPoint = GetRandomPointInVector3(_targetPointBar, _targetRadiusBarV3);
+
+            _agent.destination = _currentTargetPoint;
+            _walk = true;
+        }
+
+        if(AnimationConstants.DANCE_ZONE_NUMBER_VALUE == zoneNumber) {
+            _currentTargetPoint = GetRandomPointInVector3(_targetPointDance, _targetRadiusDanceV3);
+
+            _agent.destination = _currentTargetPoint;
+            _walk = true;
+        }
+
+        if(AnimationConstants.RELAX_RUM_ZONE_NUMBER_VALUE == zoneNumber) {
+            _currentTargetPoint = GetRandomPointInVector3(_targetPointRelaxRum, _targetRadiusRelaxRumV3);
+
+            _agent.destination = _currentTargetPoint;
+            _walk = true;
+        }
+    }
+
+    private void DefinitionTagVolumeAndAssignTime() {
+        if(_currenTagVolume.Equals(AnimationConstants.TAG_DANCE_FOR_VOLUME)) {
+            UseAnimations(false, false, false, Random.Range(1, 4));
+            _currentTimer = _danceTime;
+        }
+
+        if(_currenTagVolume.Equals(AnimationConstants.TAG_BAR_FOR_VOLUME)) {
+            UseAnimations(false, false, false, AnimationConstants.NO_DANCE_FOR_ANIM_PERSON);
+            _currentTimer = _idleTime;
+        }
+
+        if(_currenTagVolume.Equals(AnimationConstants.TAG_RELAX_FOR_VOLUME)) {
+            UseAnimations(false, true, false, AnimationConstants.NO_DANCE_FOR_ANIM_PERSON);
+            _currentTimer = _relaxTime;
+        }
+    }
+
+    private Vector3 GetRandomPointInVector3(Transform targetPoint, Vector3 searchBounds) {
+        Vector3 randomPoint = new Vector3(
+        targetPoint.position.x + Random.Range(-searchBounds.x / 2f, 
+        searchBounds.x / 2f), targetPoint.position.y,
+        targetPoint.position.z + Random.Range(-searchBounds.z / 2f, searchBounds.z / 2f));
+
+        return randomPoint;
+    }
+
+    private void UseAnimations(bool walk, bool relax, bool search, int danceValue) {
+        _animator.SetBool(AnimationConstants.WALK_PERSON_NAME_ANIM, walk);
+        _animator.SetBool(AnimationConstants.RELAX_PERSON_NAME_ANIM, relax);
+        _animator.SetBool(AnimationConstants.SEARCH_PERSON_NAME_ANIM, search);
+        _animator.SetInteger(AnimationConstants.DANCE_PERSON_NAME_ANIM, danceValue);
+    }
+
+    #region GETTERS and SETTERS
+
+    public int GetPersonId { get => _id; }
+    public bool GetCurrentBodySearchTime { get => _bodySearchTime; set => _bodySearchTime = value; }
+    public bool GetWalkPerson { get => _walk; set => _walk = value; }
+    public float GetAndSetCurrentTime { get => _currentTimer; set => _currentTimer = value; }
+
+    #endregion
 }

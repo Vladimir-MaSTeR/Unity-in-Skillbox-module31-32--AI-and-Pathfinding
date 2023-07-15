@@ -10,7 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: c2c3be3bfe9a01a4a8606e2ffc1c25ed, type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c2c3be3bfe9a01a4a8606e2ffc1c25ed, type: 3}
       propertyPath: m_LocalPosition.x
@@ -698,7 +698,7 @@ PrefabInstance:
       addedObject: {fileID: 4343825671024760436}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c2c3be3bfe9a01a4a8606e2ffc1c25ed, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 6841408317369911729}
+      addedObject: {fileID: 2517813627956725664}
   m_SourcePrefab: {fileID: 100100000, guid: c2c3be3bfe9a01a4a8606e2ffc1c25ed, type: 3}
 --- !u!1 &5740479376441772918 stripped
 GameObject:
@@ -798,7 +798,7 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &6841408317369911729
+--- !u!114 &2517813627956725664
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -812,11 +812,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _startTarget: {fileID: 0}
   _targetPointDance: {fileID: 0}
-  _targetRadiusDance: 8.85
+  _targetRadiusDance: 5.59
+  _targetRadiusDanceV3: {x: 13, y: 0.1, z: 17}
   _targetPointBar: {fileID: 0}
-  _targetRadiusBar: 6.35
+  _targetRadiusBar: 4
+  _targetRadiusBarV3: {x: 8, y: 0.1, z: 13}
   _targetPointRelaxRum: {fileID: 0}
   _targetRadiusRelaxRum: 11.5
+  _targetRadiusRelaxRumV3: {x: 20, y: 0.1, z: 33}
   _danceTime: 10
   _idleTime: 5
   _relaxTime: 6
