@@ -49,6 +49,7 @@ public class PersonController : MonoBehaviour {
 
     #endregion
 
+    #region PRIVATE FIELDS
     private int _id;
 
     private NavMeshAgent _agent;
@@ -61,58 +62,25 @@ public class PersonController : MonoBehaviour {
     private Vector3 _currentTargetPoint;
     private String _currenTagVolume;
     private int _zoneNumber;
+    #endregion
 
+    #region UNITY STANDART METHODS
     private void Awake() {
         _id = GetInstanceID();
         // Debug.Log($"Присвоен идентификатор = {_id}");
     }
 
     private void Start() {
-        _agent = GetComponent<NavMeshAgent>();
-        _animator = GetComponent<Animator>();
-
-        _currentTargetPoint = GetRandomPointInVector3(_startTarget.transform, _startTargetRadiusV3);
-        ;
-        _agent.destination = _currentTargetPoint;
-        UseAnimations(true, false, false, AnimationConstants.NO_DANCE_FOR_ANIM_PERSON);
-        _walk = true;
+        StartActionsGame();
     }
 
     private void Update() {
-        if(_walk) {
-            if(_agent.remainingDistance <= _agent.stoppingDistance) {
-                _walk = false;
-                DefinitionTagVolumeAndAssignTime();
-            }
-        } else {
-            if(_bodySearchTime) {
-                UseAnimations(false, false, true, AnimationConstants.NO_DANCE_FOR_ANIM_PERSON);
-            }
-
-            if(_currentTimer <= 0) {
-                _zoneNumber = Random.Range(1, 4);
-                UseAnimations(true, false, false, AnimationConstants.NO_DANCE_FOR_ANIM_PERSON);
-                ActionsWithZoneNumber(_zoneNumber);
-            } else {
-                _currentTimer -= Time.deltaTime;
-            }
-        }
+        RepeatActionsForUpdateMethod();
     }
 
     private void OnTriggerEnter(Collider other) {
-        if(other.CompareTag(AnimationConstants.TAG_DANCE_FOR_VOLUME)) {
-            _currenTagVolume = AnimationConstants.TAG_DANCE_FOR_VOLUME;
-        }
-
-        if(other.CompareTag(AnimationConstants.TAG_BAR_FOR_VOLUME)) {
-            _currenTagVolume = AnimationConstants.TAG_BAR_FOR_VOLUME;
-        }
-
-        if(other.CompareTag(AnimationConstants.TAG_RELAX_FOR_VOLUME)) {
-            _currenTagVolume = AnimationConstants.TAG_RELAX_FOR_VOLUME;
-        }
+        SetCurrentTagVolumeForTrigger(other);
     }
-
     private void OnDrawGizmos() {
         Gizmos.color = Color.yellow;
 
@@ -120,23 +88,71 @@ public class PersonController : MonoBehaviour {
         Gizmos.DrawWireCube(_targetPointBar.position, _targetRadiusBarV3);
         Gizmos.DrawWireCube(_targetPointRelaxRum.position, _targetRadiusRelaxRumV3);
     }
+    #endregion
 
+    #region CASTOM METHODS
+    private void StartActionsGame() {
+        _agent = GetComponent<NavMeshAgent>();
+        _animator = GetComponent<Animator>();
+
+        _currentTargetPoint = GetRandomPointInVector3(_startTarget.transform, _startTargetRadiusV3);
+        ;
+        _agent.destination = _currentTargetPoint;
+        UseAnimations(true, false, false, GameConstants.NO_DANCE_FOR_ANIM_PERSON);
+        _walk = true;
+    }
+
+    private void RepeatActionsForUpdateMethod() {
+        if(_walk) {
+            if(_agent.remainingDistance <= _agent.stoppingDistance) {
+                _walk = false;
+                DefinitionTagVolumeAndAssignTime();
+            }
+        } else {
+            if(_bodySearchTime) {
+                UseAnimations(false, false, true, GameConstants.NO_DANCE_FOR_ANIM_PERSON);
+            }
+
+            if(_currentTimer <= 0) {
+                _zoneNumber = Random.Range(1, 4);
+                UseAnimations(true, false, false, GameConstants.NO_DANCE_FOR_ANIM_PERSON);
+                ActionsWithZoneNumber(_zoneNumber);
+            } else {
+                _currentTimer -= Time.deltaTime;
+            }
+        }
+    }
+
+    private void SetCurrentTagVolumeForTrigger(Collider other) {
+        if(other.CompareTag(GameConstants.TAG_DANCE_FOR_VOLUME)) {
+            _currenTagVolume = GameConstants.TAG_DANCE_FOR_VOLUME;
+        }
+
+        if(other.CompareTag(GameConstants.TAG_BAR_FOR_VOLUME)) {
+            _currenTagVolume = GameConstants.TAG_BAR_FOR_VOLUME;
+        }
+
+        if(other.CompareTag(GameConstants.TAG_RELAX_FOR_VOLUME)) {
+            _currenTagVolume = GameConstants.TAG_RELAX_FOR_VOLUME;
+        }
+    }
+    
     private void ActionsWithZoneNumber(int zoneNumber) {
-        if(AnimationConstants.BAR_ZONE_NUMBER_VALUE == zoneNumber) {
+        if(GameConstants.BAR_ZONE_NUMBER_VALUE == zoneNumber) {
             _currentTargetPoint = GetRandomPointInVector3(_targetPointBar, _targetRadiusBarV3);
 
             _agent.destination = _currentTargetPoint;
             _walk = true;
         }
 
-        if(AnimationConstants.DANCE_ZONE_NUMBER_VALUE == zoneNumber) {
+        if(GameConstants.DANCE_ZONE_NUMBER_VALUE == zoneNumber) {
             _currentTargetPoint = GetRandomPointInVector3(_targetPointDance, _targetRadiusDanceV3);
 
             _agent.destination = _currentTargetPoint;
             _walk = true;
         }
 
-        if(AnimationConstants.RELAX_RUM_ZONE_NUMBER_VALUE == zoneNumber) {
+        if(GameConstants.RELAX_RUM_ZONE_NUMBER_VALUE == zoneNumber) {
             _currentTargetPoint = GetRandomPointInVector3(_targetPointRelaxRum, _targetRadiusRelaxRumV3);
 
             _agent.destination = _currentTargetPoint;
@@ -145,18 +161,18 @@ public class PersonController : MonoBehaviour {
     }
 
     private void DefinitionTagVolumeAndAssignTime() {
-        if(_currenTagVolume.Equals(AnimationConstants.TAG_DANCE_FOR_VOLUME)) {
+        if(_currenTagVolume.Equals(GameConstants.TAG_DANCE_FOR_VOLUME)) {
             UseAnimations(false, false, false, Random.Range(1, 4));
             _currentTimer = _danceTime;
         }
 
-        if(_currenTagVolume.Equals(AnimationConstants.TAG_BAR_FOR_VOLUME)) {
-            UseAnimations(false, false, false, AnimationConstants.NO_DANCE_FOR_ANIM_PERSON);
+        if(_currenTagVolume.Equals(GameConstants.TAG_BAR_FOR_VOLUME)) {
+            UseAnimations(false, false, false, GameConstants.NO_DANCE_FOR_ANIM_PERSON);
             _currentTimer = _idleTime;
         }
 
-        if(_currenTagVolume.Equals(AnimationConstants.TAG_RELAX_FOR_VOLUME)) {
-            UseAnimations(false, true, false, AnimationConstants.NO_DANCE_FOR_ANIM_PERSON);
+        if(_currenTagVolume.Equals(GameConstants.TAG_RELAX_FOR_VOLUME)) {
+            UseAnimations(false, true, false, GameConstants.NO_DANCE_FOR_ANIM_PERSON);
             _currentTimer = _relaxTime;
         }
     }
@@ -171,11 +187,13 @@ public class PersonController : MonoBehaviour {
     }
 
     private void UseAnimations(bool walk, bool relax, bool search, int danceValue) {
-        _animator.SetBool(AnimationConstants.WALK_PERSON_NAME_ANIM, walk);
-        _animator.SetBool(AnimationConstants.RELAX_PERSON_NAME_ANIM, relax);
-        _animator.SetBool(AnimationConstants.SEARCH_PERSON_NAME_ANIM, search);
-        _animator.SetInteger(AnimationConstants.DANCE_PERSON_NAME_ANIM, danceValue);
+        _animator.SetBool(GameConstants.WALK_PERSON_NAME_ANIM, walk);
+        _animator.SetBool(GameConstants.RELAX_PERSON_NAME_ANIM, relax);
+        _animator.SetBool(GameConstants.SEARCH_PERSON_NAME_ANIM, search);
+        _animator.SetInteger(GameConstants.DANCE_PERSON_NAME_ANIM, danceValue);
     }
+    
+    #endregion
 
     #region GETTERS and SETTERS
 
